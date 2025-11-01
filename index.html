@@ -76,7 +76,7 @@
       .menu-toggle-button {
         position: fixed;
         top: 16px;
-        left: 16px;
+        right: 16px;
         width: 52px;
         height: 52px;
         padding: 0;
@@ -344,7 +344,7 @@
         }
         .menu-toggle-button {
           top: 12px;
-          left: 12px;
+          right: 12px;
           width: 44px;
           height: 44px;
           font-size: 22px;
@@ -386,7 +386,7 @@
         }
         .menu-toggle-button {
           top: 8px;
-          left: 8px;
+          right: 8px;
           width: 36px;
           height: 36px;
           font-size: 18px;
@@ -1805,6 +1805,29 @@
         const viewportLimit = viewportWidth - CANVAS_SIDE_PADDING / 2;
         if (Number.isFinite(viewportLimit) && viewportLimit > 0) {
           availableWidth = Math.min(availableWidth, viewportLimit);
+        }
+
+        // Check if we're in landscape orientation
+        const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+        const isMobile = window.matchMedia("(max-width: 950px)").matches;
+
+        // In landscape orientation on mobile devices, we need to account for viewport height
+        if (isLandscape && isMobile) {
+          const viewportHeight = Math.min(
+            window.innerHeight || MAX_CANVAS_SIZE,
+            document.documentElement.clientHeight || MAX_CANVAS_SIZE
+          );
+
+          // Reserve space for UI elements:
+          // - Top padding and title: ~50px
+          // - Level info: ~30px
+          // - Bottom controls and message: ~60px
+          // - Additional padding: ~40px
+          const UI_HEIGHT_RESERVE = 180;
+          const availableHeight = viewportHeight - UI_HEIGHT_RESERVE;
+
+          // Use the smaller of available width and height to ensure canvas fits
+          availableWidth = Math.min(availableWidth, Math.max(MIN_CANVAS_SIZE, availableHeight));
         }
 
         const minWidth = Math.min(MIN_CANVAS_SIZE, availableWidth);
