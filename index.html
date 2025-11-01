@@ -26,6 +26,8 @@
         margin-bottom: 10px;
         text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
         letter-spacing: 4px;
+        padding-left: 70px;
+        padding-right: 70px;
       }
       #level-info {
         font-size: 18px;
@@ -317,6 +319,8 @@
           font-size: 34px;
           letter-spacing: 2px;
           text-align: center;
+          padding-left: 60px;
+          padding-right: 60px;
         }
         #level-info {
           font-size: 16px;
@@ -347,6 +351,53 @@
         }
         .inline-rules {
           padding: 16px;
+        }
+      }
+      @media (max-width: 950px) and (orientation: landscape) {
+        body {
+          padding: 8px;
+          min-height: 100vh;
+        }
+        h1 {
+          font-size: 24px;
+          margin-bottom: 4px;
+          letter-spacing: 2px;
+          padding-left: 60px;
+          padding-right: 60px;
+        }
+        #level-info {
+          font-size: 14px;
+          margin-bottom: 8px;
+        }
+        #game-container {
+          padding: 10px;
+          max-width: 450px;
+        }
+        #game-canvas {
+          max-width: 380px;
+        }
+        #controls {
+          margin-top: 8px;
+          gap: 6px;
+        }
+        button {
+          padding: 8px 14px;
+          font-size: 13px;
+        }
+        .menu-toggle-button {
+          top: 8px;
+          left: 8px;
+          width: 36px;
+          height: 36px;
+          font-size: 18px;
+        }
+        .inline-rules {
+          display: none;
+        }
+        #message {
+          margin-top: 8px;
+          font-size: 14px;
+          min-height: 20px;
         }
       }
     </style>
