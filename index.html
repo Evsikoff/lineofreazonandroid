@@ -200,6 +200,42 @@
         font-size: 16px;
         line-height: 1.5;
       }
+      .loading-screen {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 1200;
+        color: #fff;
+        text-align: center;
+      }
+      .loading-card {
+        background: rgba(0, 0, 0, 0.25);
+        padding: 24px 28px;
+        border-radius: 18px;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(12px);
+        min-width: 260px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+      }
+      .loading-spinner {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 5px solid rgba(255, 255, 255, 0.35);
+        border-top-color: #ffffff;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
       .modal-buttons {
         display: flex;
         flex-wrap: wrap;
@@ -407,6 +443,12 @@
     </style>
   </head>
   <body>
+    <div id="loading-screen" class="loading-screen">
+      <div class="loading-card">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <div id="loading-text">Загружаем прогресс...</div>
+      </div>
+    </div>
     <button
       id="menu-toggle"
       class="menu-toggle-button hidden"
@@ -1757,6 +1799,8 @@
       const levelGrid = document.getElementById("level-grid");
       const gameContainer = document.getElementById("game-container");
       const menuToggleBtn = document.getElementById("menu-toggle");
+      const loadingScreen = document.getElementById("loading-screen");
+      const loadingText = document.getElementById("loading-text");
       const levelModalNote = levelModal
         ? levelModal.querySelector(".menu-note")
         : null;
@@ -2024,6 +2068,21 @@
           continueLevelLabel.textContent = `Доступный уровень: ${maxUnlockedLevel}`;
         }
         updateLevelModalNote();
+      }
+
+      function showLoadingScreen(text = "Загружаем прогресс...") {
+        if (loadingText) {
+          loadingText.textContent = text;
+        }
+        if (loadingScreen) {
+          loadingScreen.classList.remove("hidden");
+        }
+      }
+
+      function hideLoadingScreen() {
+        if (loadingScreen) {
+          loadingScreen.classList.add("hidden");
+        }
       }
 
       function showModal(modalElement) {
@@ -2503,11 +2562,13 @@
       async function initGame() {
         if (appInitialized) {
           await ensureProgressLoaded();
+          hideLoadingScreen();
           return;
         }
 
         if (!initPromise) {
           initPromise = (async () => {
+            showLoadingScreen("Загружаем прогресс из VK Storage...");
             console.log("→ Инициализация игры...");
 
             console.log("→ Шаг 1: Инициализация рекламы...");
@@ -2524,9 +2585,11 @@
             await ensureProgressLoaded();
 
             console.log("✅ Игра готова к запуску уровней через меню!");
+            hideLoadingScreen();
           })()
             .catch((error) => {
               console.error("Ошибка при инициализации игры:", error);
+              hideLoadingScreen();
               throw error;
             })
             .finally(() => {
