@@ -1825,10 +1825,27 @@
       let gameBlocked = false;
       let errorSegmentIndex = -1;
       let adCheckIntervalId = null;
+      let adCooldownTimeoutId = null;
+      let adCooldownActive = false;
       let maxUnlockedLevel = 1;
       let progressLoaded = false;
       let appInitialized = false;
       let initPromise = null;
+
+      function startAdCooldown() {
+        if (adCooldownTimeoutId) {
+          clearTimeout(adCooldownTimeoutId);
+        }
+
+        adCooldownActive = true;
+        console.log("⏱ Таймер после рекламы запущен на 30 секунд");
+
+        adCooldownTimeoutId = setTimeout(() => {
+          adCooldownActive = false;
+          adCooldownTimeoutId = null;
+          console.log("⏱ Таймер после рекламы завершён, показ снова доступен");
+        }, 30_000);
+      }
 
       function computeCanvasDisplaySize() {
         const container = canvas.parentElement;
@@ -1934,6 +1951,11 @@
       }
 
       async function showInterstitialAd() {
+        if (adCooldownActive) {
+          console.log("⏸ Показ рекламы пропущен: таймер ещё не завершён");
+          return;
+        }
+
         if (!isBridgeAvailable()) {
           return;
         }
@@ -1945,7 +1967,10 @@
 
           if (!response?.result) {
             console.warn("Показ interstitial-рекламы не удался", response);
+            return;
           }
+
+          startAdCooldown();
         } catch (error) {
           console.error("Ошибка при показе interstitial-рекламы", error);
         }
